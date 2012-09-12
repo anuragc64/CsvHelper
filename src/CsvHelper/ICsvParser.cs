@@ -36,5 +36,7 @@ namespace CsvHelper
 		/// The character position.
 		/// </value>
 		long Position { get; }
+
+		int Row { get; }
 	}
 }
