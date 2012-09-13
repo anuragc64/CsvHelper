@@ -9,6 +9,7 @@ using System.IO;
 #if !NET_2_0
 using System.Linq.Expressions;
 #endif
+using System.Text;
 using CsvHelper.Configuration;
 #if NET_2_0
 using CsvHelper.MissingFrom20;
@@ -540,7 +541,19 @@ namespace CsvHelper
 
 			while( Read() )
 			{
-				yield return GetReadRecordFunc<T>()( this );
+				T record;
+				try
+				{
+					record = GetReadRecordFunc<T>()( this );
+				}
+				catch( Exception ex )
+				{
+					var error = new StringBuilder();
+					error.AppendFormat( "An error occurred trying to read a record of type '{0}'.\n", typeof( T ).FullName );
+					error.AppendFormat( "Row: {0}\n", parser.Row );
+					throw new CsvReaderException( error.ToString() );
+				}
+				yield return record;
 			}
 		}
 
